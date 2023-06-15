@@ -18,16 +18,10 @@ import java.util.*;
 @RestController
 public class StudentController {
     private final StudentService studentService;
-    private final TeacherService teacherService;
-
-    private final TeacherStudentService teacherStudentService;
 
     @Autowired
-    public StudentController(StudentService studentService, TeacherService teacherService,
-                             TeacherStudentService teacherStudentService) {
+    public StudentController(StudentService studentService, TeacherService teacherService) {
         this.studentService = studentService;
-        this.teacherService = teacherService;
-        this.teacherStudentService = teacherStudentService;
     }
 
     @GetMapping("/hello")
@@ -73,32 +67,13 @@ public class StudentController {
 
     @PostMapping("/new-student")
     public StudentVO addNewStudent(@RequestBody StudentDTO studentDTO) {
-        Student student = new Student();
-        student.setName(studentDTO.getName());
-        List<Teacher_Student> teacherStudentList = new ArrayList<>();
-        for (String teacherName : studentDTO.getTeachers()) {
-            Teacher teacher = teacherService.findByName(teacherName);
-            if (teacher == null) {
-//                System.out.println("teacher is null" + teacherInfo.getValue());
-                teacher = new Teacher();
-                teacher.setName(teacherName);
-                teacher.setTeacher_students(new ArrayList<>());
-                teacherService.save(teacher);
-
-            }
-            Teacher_Student ts = new Teacher_Student();
-            ts.setStu(student);
-            ts.setTeacher(teacher);
-            teacherStudentList.add(ts);
-        }
-        student.setTeacher_students(teacherStudentList);
-        studentService.save(student);
+        Student student = studentService.save(studentDTO);
 
         StudentVO studentVO = new StudentVO();
         studentVO.setId(student.getId());
         studentVO.setName(student.getName());
         List<TeacherVO> teacherVOList = new ArrayList<>();
-        for (Teacher_Student ts : teacherStudentList) {
+        for (Teacher_Student ts : student.getTeacher_students()) {
             TeacherVO teacherVO = new TeacherVO(ts.getTeacher().getId(), ts.getTeacher().getName());
             teacherVOList.add(teacherVO);
         }
@@ -116,5 +91,21 @@ public class StudentController {
         } else {
             return "Student not found";
         }
+    }
+
+    @PutMapping("/student")
+    public StudentVO updateStudent(@RequestBody StudentDTO studentDTO) {
+        Student student = studentService.save(studentDTO);
+
+        StudentVO studentVO = new StudentVO();
+        studentVO.setId(student.getId());
+        studentVO.setName(student.getName());
+        List<TeacherVO> teacherVOList = new ArrayList<>();
+        for (Teacher_Student ts : student.getTeacher_students()) {
+            TeacherVO teacherVO = new TeacherVO(ts.getTeacher().getId(), ts.getTeacher().getName());
+            teacherVOList.add(teacherVO);
+        }
+        studentVO.setTeacherVOList(teacherVOList);
+        return studentVO;
     }
 }

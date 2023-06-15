@@ -1,5 +1,6 @@
 package com.example.yaothao.schoolmanagement.service;
 
+import com.example.yaothao.schoolmanagement.DTO.StudentDTO;
 import com.example.yaothao.schoolmanagement.entity.Student;
 import org.springframework.stereotype.Service;
 
@@ -12,7 +13,7 @@ public interface StudentService {
 
     Student getStudentByID(Integer id);
 
-    void save(Student student);
+    Student save(StudentDTO studentDTO);
 
     void delete(Student student);
 
