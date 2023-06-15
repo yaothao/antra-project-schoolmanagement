@@ -7,7 +7,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 class SchoolmanagementApplicationTests {
 
     @Test
-    void contextLoads() {
+    void databaseConnection() {
+
     }
 
 }
